@@ -1,4 +1,4 @@
-import {Column, Entity, JoinColumn, OneToOne, PrimaryGeneratedColumn} from 'typeorm';
+import {Column, Entity, JoinColumn, ManyToOne, OneToOne, PrimaryGeneratedColumn} from 'typeorm';
 import {User} from "../../users/entities/user.entities";
 
 @Entity({name: 'tbl_media'})
@@ -12,12 +12,12 @@ export class Media {
     @Column()
     title: string;
 
-    @Column()
-    owner_id: number
+    @Column({default: () => 'CURRENT_TIMESTAMP'})
+    created: Date
 
-    @OneToOne(() => User)
+    @ManyToOne(()=>User, {eager: true})
     @JoinColumn()
-    username: User
+    user: User
 }
 
 @Entity({name: 'tbl_favourites'})

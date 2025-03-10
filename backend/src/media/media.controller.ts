@@ -9,7 +9,7 @@ import {
   Delete,
   UseGuards,
   HttpException,
-  HttpStatus
+  HttpStatus, Query
 } from '@nestjs/common';
 import { MediaService } from './media.service';
 import { CreateMediaDto } from './dto/create-media.dto';
@@ -22,20 +22,27 @@ export class MediaController {
 
   @UseGuards(OptionalAuthGuard)
   @Get()
-  async findAll() {
-    return await this.mediaService.findAll();
+  async findAll(@Query('offset') offset: number = 0, @Query('limit') limit: number = 20, @Request() req) {
+      const res = await this.mediaService.findAll(req.user, {
+        take: limit, skip: offset, order: {id: 'DESC'}  // id's are sequential, so this is a easy way to get the latest ones (
+      });
+       return res;
   }
 
   @UseGuards(OptionalAuthGuard)
   @Get(':id')
   async findOne(@Param('id') id: number) {
-    return await this.mediaService.findOne(+id);
+    const res = await this.mediaService.findOne(+id);
+    if (res === null) {
+      throw new HttpException('Media Not Found', HttpStatus.NOT_FOUND);
+    }
+    return res;
   }
 
   @UseGuards(AuthGuard)
   @Post()
   async create(@Request() req, @Body() createMediaDto: CreateMediaDto) {
-    return await this.mediaService.create(req?.user?.id, createMediaDto);
+    return await this.mediaService.create(req?.user, createMediaDto);
   }
 
   @UseGuards(AuthGuard)

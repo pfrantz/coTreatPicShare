@@ -2,29 +2,37 @@ import { Injectable } from '@nestjs/common';
 import { CreateMediaDto } from './dto/create-media.dto';
 import { UpdateMediaDto } from './dto/update-media.dto';
 import {InjectRepository} from "@nestjs/typeorm";
-import {Repository} from "typeorm";
+import {DataSource, OrderByCondition, Repository} from "typeorm";
 import {Favourites, Media} from "./entities/media.entity";
+import {FindManyOptions} from "typeorm/find-options/FindManyOptions";
+import {User} from "../users/entities/user.entities";
 
 
 @Injectable()
 export class MediaService {
   constructor(
+      private dataSource: DataSource,
       @InjectRepository(Media)
       private mediaRepository: Repository<Media>,
       @InjectRepository(Favourites)
       private favoritesRepository: Repository<Favourites>,
   ) {}
 
-  async create(user_id: number, createMediaDto: CreateMediaDto): Promise<Media> {
+  async create(user: User, createMediaDto: CreateMediaDto): Promise<Media> {
     let media = new Media();
     media.title = createMediaDto.title;
     media.url = createMediaDto.url;
-    media.owner_id = user_id;
+    media.user = user;
+
     return this.mediaRepository.save(media);
   }
 
-  async findAll() {
-    return this.mediaRepository.find();
+  async findAll(user: User | null, options: FindManyOptions<Media>) {
+      if (user) {
+          // goto figure how to join to favourites here
+            return this.mediaRepository.find(options)
+      }
+      return this.mediaRepository.find(options);
   }
 
   async findOne(id: number) {

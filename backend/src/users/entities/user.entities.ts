@@ -1,5 +1,5 @@
 import {Column, Entity, OneToMany, PrimaryGeneratedColumn} from 'typeorm';
-import {Favourites} from "../../media/entities/media.entity";
+import {Favourites, Media} from "../../media/entities/media.entity";
 
 @Entity({name: 'tbl_user'})
 export class User{
@@ -9,6 +9,9 @@ export class User{
     @Column()
     username: string;
 
-    @OneToMany(() => Favourites, (fav) => fav.media_id)
-    favourites: Favourites[];
+    @OneToMany(() => Media, (media) => media.user)
+    media: Media[];
+
+    //@OneToMany(() => Favourites, (fav) => fav.user)
+    //favourites: Favourites[];
 }
