@@ -1,4 +1,16 @@
-import {Controller, Get, Post, Body, Patch, Param, Delete, UseGuards} from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Request,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  UseGuards,
+  HttpException,
+  HttpStatus
+} from '@nestjs/common';
 import { MediaService } from './media.service';
 import { CreateMediaDto } from './dto/create-media.dto';
 import { UpdateMediaDto } from './dto/update-media.dto';
@@ -10,27 +22,32 @@ export class MediaController {
 
   @UseGuards(OptionalAuthGuard)
   @Get()
-  findAll() {
-    return this.mediaService.findAll();
+  async findAll() {
+    return await this.mediaService.findAll();
   }
 
   @UseGuards(OptionalAuthGuard)
   @Get(':id')
-  findOne(@Param('id') id: number) {
-    return this.mediaService.findOne(+id);
+  async findOne(@Param('id') id: number) {
+    return await this.mediaService.findOne(+id);
   }
 
   @UseGuards(AuthGuard)
   @Post()
-  create(@Body() createMediaDto: CreateMediaDto) {
-    return this.mediaService.create(createMediaDto);
+  async create(@Request() req, @Body() createMediaDto: CreateMediaDto) {
+    return await this.mediaService.create(req?.user?.id, createMediaDto);
   }
 
   @UseGuards(AuthGuard)
   @Patch(':id')
-  update(@Param('id') id: number, @Body() updateMediaDto: UpdateMediaDto) {
-    return this.mediaService.update(+id, updateMediaDto);
+  async update(@Param('id') id: number, @Request() req, @Body() updateMediaDto: UpdateMediaDto) {
+    const res = await this.mediaService.update(id, req?.user?.id, updateMediaDto);
+    if (res === null) {
+      throw new HttpException('Media Not Found', HttpStatus.NOT_FOUND);
+    }
+    return res;
   }
+
   @UseGuards(AuthGuard)
   @Delete(':id')
   remove(@Param('id') id: number) {

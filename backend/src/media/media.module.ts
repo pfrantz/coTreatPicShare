@@ -1,11 +1,12 @@
 import { Module } from '@nestjs/common';
 import { MediaService } from './media.service';
 import { MediaController } from './media.controller';
-import {AuthGuard} from "../auth/auth.guard";
 import {JwtModule} from "@nestjs/jwt";
+import {TypeOrmModule} from "@nestjs/typeorm";
+import {Favourites, Media} from "./entities/media.entity";
 
 @Module({
-  imports:[JwtModule],
+  imports:[JwtModule, TypeOrmModule.forFeature([Media, Favourites])],
   controllers: [MediaController],
   providers: [MediaService],
 })

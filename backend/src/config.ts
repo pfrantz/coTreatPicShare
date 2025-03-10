@@ -1,5 +1,6 @@
 import * as dotenv from 'dotenv';
 import * as path from "node:path";
+import * as process from "node:process";
 
 // Load environment variables from .env file. This is not the best but need to do this here
 // because of the stupid way NestJS works with dependency injection. if we don't do this up front
@@ -13,6 +14,9 @@ export default () => ({
     jwt_expires: process?.env?.JWT_EXPIRES ||'90d',
     database: {
         host: process?.env?.DATABASE_HOST,
-        port: (process?.env?.DATABASE_PORT) ? parseInt(process.env.DATABASE_PORT, 10) : 5432
+        port: (process?.env?.DATABASE_PORT) ? parseInt(process.env.DATABASE_PORT, 10) : 5432,
+        username: (process?.env?.DATABASE_USERNAME) ? process.env.DATABASE_USERNAME : 'root',
+        password: process?.env?.DATABASE_PASSWORD,
+        name: (process?.env?.DATABASE_NAME) ? process.env.DATABASE_NAME : 'pic_share_db',
     }
 });
