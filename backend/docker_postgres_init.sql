@@ -1,21 +1,30 @@
-CREATE TABLE IF NOT EXISTS tbl_user (
-    id SERIAL PRIMARY KEY,
-    username VARCHAR(40) NOT NULL UNIQUE
+create table if not exists tbl_user
+(
+    id       serial  primary key,
+    username varchar not null
 );
 
-CREATE TABLE IF NOT EXISTS tbl_media (
-    id SERIAL PRIMARY KEY,
-    url VARCHAR(1024) NOT NULL,
-    title VARCHAR(80) NOT NULL,
-    userId INTEGER NOT NULL,
-    created TIMESTAMP DEFAULT NOW(),
-    FOREIGN KEY (userId) REFERENCES tbl_user(id)
+create table if not exists tbl_media
+(
+    id      serial                  primary key,
+    url     varchar                 not null,
+    title   varchar                 not null,
+    created timestamp default now() not null,
+    user_id integer
+        constraint fk_media_user_id
+            references tbl_user
 );
 
-CREATE TABLE IF NOT EXISTS tbl_favourites (
-    id SERIAL PRIMARY KEY,
-    userId INTEGER NOT NULL,
-    mediaId INTEGER NOT NULL,
-    FOREIGN KEY (userId) REFERENCES tbl_user(id),
-    FOREIGN KEY (mediaId) REFERENCES tbl_media(id) ON DELETE CASCADE
+create table if not exists tbl_favourites
+(
+    id       serial  primary key,
+    user_id  integer
+        constraint fk_fav_user_id
+            references tbl_user,
+    media_id integer
+        constraint fk_fav_media_id
+            references tbl_media
 );
+
+create unique index if not exists idx_fav_user_media
+    on tbl_favourites (user_id, media_id);

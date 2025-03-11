@@ -16,7 +16,7 @@ export class Media {
     created: Date
 
     @ManyToOne(()=>User)
-    @JoinColumn({name:"user_id"})
+    @JoinColumn({name:"user_id", foreignKeyConstraintName:"fk_media_user_id"})
     user: User
 
     @OneToMany(() => Favourites, favourite => favourite.media)
@@ -24,16 +24,16 @@ export class Media {
 }
 
 @Entity({name: 'tbl_favourites'})
-@Index(["user", "media"], { unique: true })
+@Index("idx_fav_user_media", ["user", "media"], { unique: true})
 export class Favourites {
     @PrimaryGeneratedColumn()
     id: number;
 
     @ManyToOne(() => User, user => user.favourites)
-    @JoinColumn({name: 'user_id'})
+    @JoinColumn({name: 'user_id', foreignKeyConstraintName:"fk_fav_user_id"})
     user: User;
 
     @ManyToOne(() => Media, media => media.favourites)
-    @JoinColumn({name: 'media_id'})
+    @JoinColumn({name: 'media_id', foreignKeyConstraintName:"fk_fav_media_id"})
     media: Media;
 }
