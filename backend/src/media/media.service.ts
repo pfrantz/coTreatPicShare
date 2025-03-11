@@ -28,52 +28,74 @@ export class MediaService {
   }
 
   async findAll(user: User | null, options: FindManyOptions<Media>) {
+      // nice and efficient way to get the media with the user who created it and if it's a favourite for the user
+      // all in one query and minimal data processing
+      let query = this.mediaRepository.createQueryBuilder('media').leftJoinAndSelect('media.user', 'user');
+
+      let fields = [
+          'media.id as id',
+          'media.url as url',
+          'media.title as title',
+          'media.created as created',
+          'user.id as createdById',
+          'user.username as createdBy'
+      ];
+
+      // add the is favourite field if user is provided
       if (user) {
-          // goto figure how to join to favourites here
-            return this.mediaRepository.find(options)
+          query = query.leftJoinAndSelect('media.favourites', 'favourites', 'favourites.user_id = :user_id', { user_id: user.id })
+          fields.push('CASE WHEN favourites.id IS NOT NULL THEN true ELSE false END AS isFavourite')
       }
-      return this.mediaRepository.find(options);
+
+      return query
+          .select(fields)
+          .limit(options.take)
+          .offset(options.skip)
+          .orderBy(options.order as OrderByCondition)
+          .getRawMany();
   }
 
   async findOne(id: number) {
     return this.mediaRepository.findOneBy({id})
   }
 
-  async update(id: number, user_id: number, updateMediaDto: UpdateMediaDto) {
-    let media = await this.mediaRepository.findOneBy({ id });
-    if (!media) {
-       return null
-    }
+  async update(id: number, user: User, updateMediaDto: UpdateMediaDto) {
+      let media = await this.mediaRepository.findOneBy({id});
+      if (!media) {
+          return null
+      }
 
-    // deal with fav only if true/false - if null or undefined, do nothing
-    if (updateMediaDto.favourite === true) {
-        let favourite = new Favourites();
-        favourite.media_id = id;
-        favourite.user_id = user_id;
-        const res = await this.favoritesRepository.save(favourite);
-        console.log(res);
-    }
-    else if (updateMediaDto.favourite === false) {
-        let favourite = await this.favoritesRepository.findOneBy({ media_id: id, user_id });
-        if (favourite) {
-            await this.favoritesRepository.delete(favourite.id);
-        }
-    }
+      //@ts-ignore
+      let favourite = await this.favoritesRepository.findOneBy({
+          media: { id: media.id },
+          user: { id: user.id }
+      });
 
-    if (updateMediaDto.title || updateMediaDto.url) {
+      // deal with fav only if true/false - if null or undefined, do nothing. Explicit tests needed here
+      if (!favourite && updateMediaDto.favourite === true) {
+          let favourite = new Favourites();
+          favourite.media = media;
+          favourite.user = user;
+          const res = await this.favoritesRepository.save(favourite);
+          console.log(res);
+      } else if (favourite && updateMediaDto.favourite === false) {
+          await this.favoritesRepository.delete(favourite.id);
+      }
 
-        if (updateMediaDto.title) {
-            media.title = updateMediaDto.title;
-        }
-        if (updateMediaDto.url) {
-            media.url = updateMediaDto.url;
-        }
-        await this.mediaRepository.save(media);
-    }
-    return { ...media, favourite: updateMediaDto.favourite };
+      if (updateMediaDto.title || updateMediaDto.url) {
+
+          if (updateMediaDto.title) {
+              media.title = updateMediaDto.title;
+          }
+          if (updateMediaDto.url) {
+              media.url = updateMediaDto.url;
+          }
+          await this.mediaRepository.save(media);
+      }
+      return {...media, favourite: updateMediaDto.favourite};
   }
 
-  async remove(id: number) {
-    return this.mediaRepository.delete(id);
-  }
+    async remove(id: number) {
+        return this.mediaRepository.delete(id);
+    }
 }

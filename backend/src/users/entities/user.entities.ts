@@ -12,6 +12,6 @@ export class User{
     @OneToMany(() => Media, (media) => media.user)
     media: Media[];
 
-    //@OneToMany(() => Favourites, (fav) => fav.user)
-    //favourites: Favourites[];
+    @OneToMany(() => Favourites, (fav) => fav.user)
+    favourites: Favourites[];
 }

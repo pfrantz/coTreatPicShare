@@ -1,4 +1,4 @@
-import {Column, Entity, JoinColumn, ManyToOne, OneToOne, PrimaryGeneratedColumn} from 'typeorm';
+import {Column, Entity, Index, JoinColumn, ManyToOne, OneToMany, OneToOne, PrimaryGeneratedColumn} from 'typeorm';
 import {User} from "../../users/entities/user.entities";
 
 @Entity({name: 'tbl_media'})
@@ -15,19 +15,25 @@ export class Media {
     @Column({default: () => 'CURRENT_TIMESTAMP'})
     created: Date
 
-    @ManyToOne(()=>User, {eager: true})
-    @JoinColumn()
+    @ManyToOne(()=>User)
+    @JoinColumn({name:"user_id"})
     user: User
+
+    @OneToMany(() => Favourites, favourite => favourite.media)
+    favourites: Favourites[];
 }
 
 @Entity({name: 'tbl_favourites'})
+@Index(["user", "media"], { unique: true })
 export class Favourites {
     @PrimaryGeneratedColumn()
     id: number;
 
-    @Column()
-    media_id: number;
+    @ManyToOne(() => User, user => user.favourites)
+    @JoinColumn({name: 'user_id'})
+    user: User;
 
-    @Column()
-    user_id: number
+    @ManyToOne(() => Media, media => media.favourites)
+    @JoinColumn({name: 'media_id'})
+    media: Media;
 }

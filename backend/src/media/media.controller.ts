@@ -48,7 +48,7 @@ export class MediaController {
   @UseGuards(AuthGuard)
   @Patch(':id')
   async update(@Param('id') id: number, @Request() req, @Body() updateMediaDto: UpdateMediaDto) {
-    const res = await this.mediaService.update(id, req?.user?.id, updateMediaDto);
+    const res = await this.mediaService.update(id, req.user, updateMediaDto);
     if (res === null) {
       throw new HttpException('Media Not Found', HttpStatus.NOT_FOUND);
     }
