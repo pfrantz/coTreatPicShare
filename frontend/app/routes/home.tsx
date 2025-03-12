@@ -11,15 +11,10 @@ export default function Home() {
         token: {colorBgContainer, borderRadiusLG},
     } = theme.useToken();
 
-    return (<div
-        style={{
-            background: colorBgContainer,
-            minHeight: 280,
-            padding: 24,
-            borderRadius: borderRadiusLG,
-            flex: 1
-        }}
-    >
-        {isAuthenticated ? <AuthHome/> : <UnAuthHome/>}
-    </div>)
+    return(
+        <>
+            {isAuthenticated ? <AuthHome/> : <UnAuthHome/>}
+        </>
+    );
+
 }
