@@ -47,7 +47,7 @@ const PreviewMask: React.FC<PreviewMaskProps> = ({ imgPreview, username, created
         <div style={{ display: 'flex', width: "100%", height:"90%"}}>
             <div style={{ flex: '1 1 10%' }}></div>
             <div style={{ flex: '1 1 80%', marginTop: '10px'}}>
-                <img src={info.image.url} alt={info.image.alt} style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
+                <img preview={false} src={info.image.url} alt={info.image.alt} style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
             </div>
             <div style={{ flex: '1 1 10%' }}></div>
         </div>
@@ -70,8 +70,8 @@ const PicCard: React.FC<PicCardProps> = ({ width, height, id, url, title, create
                 style={{ padding: '10px 10px 0px 10px', height: height-100, objectFit: 'cover', objectPosition: 'center' }}
                 preview={{
                     imageRender: (imgPreview, info) =>
-                        (<PreviewMask imgPreview={imgPreview} info={info} username={createdby} created={created || new Date()} />)
-
+                        (<PreviewMask imgPreview={imgPreview} info={info} username={createdby} created={created || new Date()} />),
+                    toolbarRender: () => null,
                 }}
                 />
            }
