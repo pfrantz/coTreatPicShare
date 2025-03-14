@@ -1,18 +1,36 @@
 import React, { useState } from 'react';
-import {Button, Divider, Form, Input, Modal, Typography} from 'antd';
+import {Divider, Form, Input, Modal, notification, Typography} from 'antd';
+import { useAuth } from '~/context/AuthContext';
+
+import type {DataType} from "~/types/dataType";
 
 export interface SharePicDialogProps {
     isModalOpen: boolean;
-    handleOk: (url: string, title: string) => void;
+    handleOk: (data: DataType) => void;
     handleCancel: () => void;
 }
 
 export const SharePicDialog : React.FC<SharePicDialogProps> = ({ isModalOpen, handleOk, handleCancel }) => {
     const [url, setUrl] = useState('');
     const [title, setTitle] = useState('');
+    const {fetchWithAuth} = useAuth();
 
-    const handleShare = (url:string, title:string) => {
-        handleOk(url, title);
+    const handleShare = async (url:string, title:string) => {
+        try {
+            const response = await fetchWithAuth('/api/v1/media', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ url, title }),
+            });
+
+            handleOk(response);
+        } catch (error) {
+            notification.error({message:'Failed to share picture', description: error.message});
+            console.error(error.stack);
+        }
+
     }
 
     const [form] = Form.useForm();

@@ -7,6 +7,7 @@ import { SharePicDialog } from "~/components/SharePicDialog";
 import { useAuth } from "~/context/AuthContext";
 import {useLocation, useNavigate} from "react-router";
 import {useModal} from "~/hooks/useModal";
+import type {DataType} from "~/types/dataType";
 
 const { Title } = Typography;
 
@@ -40,9 +41,9 @@ export const MainLayout: React.FunctionComponent<LayoutInterface> = (props) => {
 
     const { children } = props;
 
-    const sharePicHandlerOk = (url, title) => {
+    const sharePicHandlerOk = (data: DataType) => {
         closeModal();
-        console.log(url, title);
+        console.log(data);
         if (location.pathname === '/'){
             navigate(0);
         }
@@ -61,7 +62,7 @@ export const MainLayout: React.FunctionComponent<LayoutInterface> = (props) => {
             <Header style={{ background: colorBgContainer, display: "flex", justifyContent: "space-between", alignItems: "center", position: "sticky", top: 0, zIndex: 1, width:'100%' }}>
                 <div style={{ display: "flex", alignItems: "center" }}>
                     <Title level={2} style={{ margin: 0 }}>PicShare</Title>
-                    {isAuthenticated ? <AuthLeftMenu location={location}  items={items}/> : null}
+                    {isAuthenticated ? <AuthLeftMenu location={location as Location}  items={items}/> : null}
                 </div>
                 <div style={{ display: "flex", alignItems: "center" }}>
                     {isAuthenticated ? <AuthRightMenu username={currentUser || ''} sharePicHandler={sharePicHandler}/> : <UnAuthRIghtMenu />}

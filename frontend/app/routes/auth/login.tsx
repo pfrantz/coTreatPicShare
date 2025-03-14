@@ -1,23 +1,38 @@
 import React, { useState } from 'react';
-import { Button, Input, Typography, Form, theme } from 'antd';
+import { Button, notification, Input, Typography, Form, theme, Space } from 'antd';
 import { useAuth } from '~/context/AuthContext';
 import { useNavigate } from 'react-router';
-
 const { Title, Text } = Typography;
+
 
 export default function Login() {
     const [username, setUsername] = useState('');
-    const { login } = useAuth();
+    const { login, fetchWithAuth } = useAuth();
     const navigate = useNavigate();
 
     const {
         token: { colorBgContainer, borderRadiusLG },
     } = theme.useToken();
 
-    const handleLogin = () => {
-        // Replace 'dummyToken' with actual token logic
-        login(username, 'dummyToken');
-        navigate('/');
+    //const [api, contextHolder] = notification.useNotification();
+
+    const handleLogin = async () => {
+        try {
+            const response = await fetchWithAuth('/api/v1/auth/login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ username }),
+            });
+
+            const { token, profile } = response;
+            login(profile.username, token);
+            navigate('/');
+        } catch (error) {
+            notification.error({message:'Login failed', description: error.message});
+            console.error(error.stack);
+        }
     };
 
     return (

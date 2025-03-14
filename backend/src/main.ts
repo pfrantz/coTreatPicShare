@@ -21,6 +21,8 @@ async function bootstrap() {
     transform: true,
   }));
 
+  app.enableCors();
+
   // start up the server
   await app.listen(port);
 }

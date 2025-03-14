@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useState } from 'react';
+import { AuthException } from '~/utils/exceptions';
 
 interface AuthContextType {
     isAuthenticated: boolean;
@@ -6,6 +7,7 @@ interface AuthContextType {
     authToken: string | null;
     login: (username: string, token: string) => void;
     logout: () => void;
+    fetchWithAuth: (url: string, options?: RequestInit) => Promise<any>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -31,8 +33,33 @@ export const AuthProvider = ({ children }: { children }) => {
         setAuthToken(null);
     };
 
+    const fetchWithAuth = async (url: string, options: RequestInit = {}) => {
+        const headers = {
+            ...options.headers,
+        };
+
+        if (authToken) {
+            headers['Authorization'] =`Bearer ${authToken}`;
+        }
+
+        //@ts-ignore
+        const fullUrl = `${process.env.REACT_APP_PIC_SHARE_ENDPOINT}${url}`
+       //@ts-ignore
+        const response = await fetch(fullUrl, {...options, headers});
+
+        if (response.status === 401) {
+            throw new AuthException('Unauthorized access');
+        } else if (response.status === 403) {
+            throw new AuthException('Forbidden access - you do not have permission to access this resource');
+        } else if (!response.ok) {
+            throw new Error(`Unable to get data from the server (status=${response.status})`);
+        }
+
+        return response.json();
+    };
+
     return (
-        <AuthContext.Provider value={{ isAuthenticated, currentUser, authToken, login, logout }}>
+        <AuthContext.Provider value={{ isAuthenticated, currentUser, authToken, login, logout, fetchWithAuth }}>
             {children}
         </AuthContext.Provider>
     );

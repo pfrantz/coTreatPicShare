@@ -22,8 +22,8 @@ export class MediaController {
 
   @UseGuards(OptionalAuthGuard)
   @Get()
-  async findAll(@Query('offset') offset: number = 0, @Query('limit') limit: number = 20, @Request() req) {
-      const res = await this.mediaService.findAll(req.user, {
+  async findAll(@Query('offset') offset: number = 0, @Query('limit') limit: number = 20, @Query('filter') filter: string | null = null, @Request() req) {
+      const res = await this.mediaService.findAll(req.user, filter, {
         take: limit, skip: offset, order: {id: 'DESC'}  // id's are sequential, so this is a easy way to get the latest ones (
       });
        return res;

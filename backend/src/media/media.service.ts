@@ -27,7 +27,7 @@ export class MediaService {
     return this.mediaRepository.save(media);
   }
 
-  async findAll(user: User | null, options: FindManyOptions<Media>) {
+  async findAll(user: User | null, filter: string | null, options: FindManyOptions<Media>) {
       // nice and efficient way to get the media with the user who created it and if it's a favourite for the user
       // all in one query and minimal data processing
       let query = this.mediaRepository.createQueryBuilder('media').leftJoinAndSelect('media.user', 'user');
@@ -43,7 +43,12 @@ export class MediaService {
 
       // add the is favourite field if user is provided
       if (user) {
-          query = query.leftJoinAndSelect('media.favourites', 'favourites', 'favourites.user_id = :user_id', { user_id: user.id })
+          if (filter == "favourites") {
+              query = query.innerJoinAndSelect('media.favourites', 'favourites', 'favourites.user_id = :user_id', {user_id: user.id})
+          }
+          else {
+              query = query.leftJoinAndSelect('media.favourites', 'favourites', 'favourites.user_id = :user_id', {user_id: user.id})
+          }
           fields.push('CASE WHEN favourites.id IS NOT NULL THEN true ELSE false END AS isFavourite')
       }
 

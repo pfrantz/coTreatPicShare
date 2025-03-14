@@ -1,27 +1,19 @@
-import React, { useEffect, useState } from 'react';
-import {Divider, Card, List, Grid, Spin} from 'antd';
+import React, {useEffect, useState} from 'react';
+import {Divider, Grid, List, notification, Spin, theme} from 'antd';
 import InfiniteScroll from 'react-infinite-scroll-component';
 import PicCard from "~/components/PicCard";
+import {useAuth} from "~/context/AuthContext";
+import type {DataType} from "~/types/dataType";
 
-
-export interface DataType {
-    id: number;
-    url: string;
-    title: string;
-    created: Date;
-    createdbyid: number;
-    createdby: string;
-    isfavourite?: boolean;
-}
 
 export interface CardListProps {
     prompt?: React.ReactNode;
+    filter?: "favourites"|"mine";
 }
 
 const { useBreakpoint } = Grid;
 
-
-export const CardList : React.FC<CardListProps> = ({prompt}) => {
+export const CardList : React.FC<CardListProps> = ({prompt, filter}) => {
     const  dataLoadSize = 30; // this is the number of items to load each time. This should be a multiple of the number of columns
 
     // the following is needed to set the number of columns and the width of the cards as we need to do the calculations based on the screen size
@@ -80,18 +72,29 @@ export const CardList : React.FC<CardListProps> = ({prompt}) => {
     }
 
     const screens = useBreakpoint();
+    const {fetchWithAuth} = useAuth();
 
     const [loading, setLoading] = useState<boolean>(false);
     const [hasMore, setHasMore] = useState<boolean>(true);
+    const [offset, setOffset] = useState<number>(0);
+
     const [data, setData] = useState<DataType[]>([]);
 
     const [columns, setColumns] = useState<number>(getColumnFromScreen(screens));
+
+    const {
+        token: { defaultBorderColor },
+    } = theme.useToken();
 
     useEffect(() => {
         const col = getColumnFromScreen(screens);
         setColumns(col);
 
     }, [screens]);
+
+    /**
+     * the following is a dummy data generator. Used for testing purposes. uncomment if needed and comment out the the real loadMoreData
+     *
 
     const urls = [
         "https://images.pexels.com/photos/1851164/pexels-photo-1851164.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2",
@@ -129,10 +132,70 @@ export const CardList : React.FC<CardListProps> = ({prompt}) => {
             setLoading(false);
         }, 500);
     };
+    **/
+
+    const loadMoreData = async () => {
+        if (loading)
+            return;
+
+        try {
+            setLoading(true);
+
+            let filterParam="";
+            if (filter){
+                filterParam = `&filter=${filter}`;
+            }
+            const response = await fetchWithAuth(`/api/v1/media?limit=${dataLoadSize}&offset=${offset}${filterParam}`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                }
+            });
+
+            if (response.length < dataLoadSize) {
+                setHasMore(false);
+            }
+            setOffset(offset+response.length);
+            setData([...data, ...response]);
+            setLoading(false);
+        } catch (error) {
+            setLoading(false);
+            notification.error({message:'Loading Pictures failed', description: error.message});
+            console.error(error.stack);
+        }
+    };
 
     useEffect(() => {
         loadMoreData();
     }, []);
+
+
+    const onFavouriteClick = async (id:number, isSelected:boolean) => {
+        try {
+            const response = await fetchWithAuth(`/api/v1/media/${id}`, {
+                method: 'PATCH',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ "favourite": !isSelected }),
+            });
+
+            const { favourite } = response;
+
+            const index = data.findIndex(item => item.id === id);
+            if (index !== -1) {
+                const entry = data[index];
+                entry['isfavourite'] =favourite;
+                const updatedData = [...data];
+                updatedData[index] = entry;
+                setData(updatedData);
+            }
+        } catch (error) {
+            notification.error({message:'Login failed', description: error.message});
+            console.error(error.stack);
+        }
+
+    }
 
     const gutter = 16;
     const cardWidth = getWidthFromScreen(screens);
@@ -161,7 +224,7 @@ export const CardList : React.FC<CardListProps> = ({prompt}) => {
                 hasMore={hasMore}
                 loader={<Spin tip="Loading pictures..."><div style={{padding: 50, background: 'rgba(0, 0, 0, 0.05)', borderRadius:4}} /></Spin>}
                 loading={loading}
-                endMessage={<Divider plain>No more pictures</Divider>}
+                endMessage={<Divider style={{ borderColor: defaultBorderColor }} />}
             >
                 <div style={{ width: listWidth}}>
                     {prompt}
@@ -176,10 +239,13 @@ export const CardList : React.FC<CardListProps> = ({prompt}) => {
                                 <PicCard
                                     width={cardWidth}
                                     height={cardHeight}
+                                    id={item.id}
                                     url={item.url}
                                     title={item.title}
-                                    created={item.created}
+                                    created={(item.created) ? new Date(item.created) : undefined}
                                     createdby={item.createdby}
+                                    isfavourite={item.isfavourite}
+                                    onFavouriteClick={onFavouriteClick}
                                 />
                             </List.Item>
                         )}
