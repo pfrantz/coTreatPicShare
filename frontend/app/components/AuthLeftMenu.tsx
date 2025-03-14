@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Menu } from "antd";
+import {Grid, Menu} from "antd";
 import type { MenuProps } from 'antd';
 import { useNavigate, useLocation } from "react-router";
 
@@ -13,6 +13,7 @@ export const AuthLeftMenu: React.FunctionComponent<AuthLeftMenuInterface> = (pro
     const l = useLocation();
     const navigate = useNavigate();
     const [current, setCurrent] = useState(location?.pathname || '/');
+    const screens = Grid.useBreakpoint();
 
     useEffect(() => {
         setCurrent(location?.pathname || '/');
@@ -26,7 +27,7 @@ export const AuthLeftMenu: React.FunctionComponent<AuthLeftMenuInterface> = (pro
     return (
         <Menu
             mode="horizontal"
-            style={{ flex: 1, minWidth: 200 }}
+            style={{ flex: 1, minWidth: (screens.md) ? 200: 0 }}
             items={items}
             onClick={onClick}
             selectedKeys={[current]}
