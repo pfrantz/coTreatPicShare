@@ -43,7 +43,7 @@ export const AuthProvider = ({ children }: { children }) => {
         }
 
         //@ts-ignore
-        const fullUrl = `${process.env.REACT_APP_PIC_SHARE_ENDPOINT}${url}`
+        const fullUrl = `${import.meta.env.VITE_APP_PIC_SHARE_ENDPOINT}${url}`
        //@ts-ignore
         const response = await fetch(fullUrl, {...options, headers});
 

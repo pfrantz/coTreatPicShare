@@ -43,7 +43,9 @@ export const MainLayout: React.FunctionComponent<LayoutInterface> = (props) => {
 
     const sharePicHandlerOk = (data: DataType) => {
         closeModal();
-        console.log(data);
+
+        // TODO: this is a hack - we really need to send a message to the card list to refresh itself
+        // we need a pub / sub model here to save a trip to the server.
         if (location.pathname === '/'){
             navigate(0);
         }

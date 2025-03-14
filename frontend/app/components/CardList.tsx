@@ -14,7 +14,7 @@ export interface CardListProps {
 const { useBreakpoint } = Grid;
 
 export const CardList : React.FC<CardListProps> = ({prompt, filter}) => {
-    const  dataLoadSize = 30; // this is the number of items to load each time. This should be a multiple of the number of columns
+    const  dataLoadSize = 25; // this is the number of items to load each time. This should be a multiple of the number of columns
 
     // the following is needed to set the number of columns and the width of the cards as we need to do the calculations based on the screen size
     // ourselves as the List component does not support grid jusitfy center
@@ -22,18 +22,18 @@ export const CardList : React.FC<CardListProps> = ({prompt, filter}) => {
         xs: 1,
         sm: 2,
         md: 3,
-        lg: 4,
-        xl: 5,
+        lg: 3,
+        xl: 4,
         xxl: 6,
     }
 
     const widthBreakpoints = {
-        xs: 350,
-        sm: 250,
-        md: 250,
-        lg: 250,
-        xl: 250,
-        xxl: 250,
+        xs: 400,
+        sm: 260,
+        md: 260,
+        lg: 260,
+        xl: 260,
+        xxl: 260,
     }
 
     const heightBreakpoints = {
