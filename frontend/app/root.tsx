@@ -47,11 +47,10 @@ export function Layout({ children }: { children: React.ReactNode }) {
 export default function App() {
   return (
       <AuthProvider>
-        <MainLayout>
-          <Outlet/>
-        </MainLayout>
-      </AuthProvider
-  >);
+          <MainLayout >
+            <Outlet/>
+          </MainLayout>
+      </AuthProvider>);
 
 }
 

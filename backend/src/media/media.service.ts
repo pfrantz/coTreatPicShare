@@ -77,7 +77,6 @@ export class MediaService {
           favourite.media = media;
           favourite.user = user;
           const res = await this.favoritesRepository.save(favourite);
-          console.log(res);
       } else if (favourite && updateMediaDto.favourite === false) {
           await this.favoritesRepository.delete(favourite.id);
       }

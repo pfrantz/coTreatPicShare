@@ -1,39 +1,27 @@
-import React, {useEffect, useState} from "react";
+import React, { useEffect, useState } from "react";
 import { Menu } from "antd";
 import type { MenuProps } from 'antd';
 import { useNavigate, useLocation } from "react-router";
 
 interface AuthLeftMenuInterface {
     location: Location | null;
+    items: MenuProps['items'];
 }
 
-type MenuItem = Required<MenuProps>['items'][number];
-
 export const AuthLeftMenu: React.FunctionComponent<AuthLeftMenuInterface> = (props) => {
-    const { location } = props;
+    const { location, items } = props;
     const l = useLocation();
     const navigate = useNavigate();
     const [current, setCurrent] = useState(location?.pathname || '/');
 
-    useEffect(()=>{
+    useEffect(() => {
         setCurrent(location?.pathname || '/');
-    }, [location])
+    }, [location]);
 
     const onClick: MenuProps['onClick'] = (e) => {
         setCurrent(e.key);
         navigate(e.key);
     };
-
-    const items: MenuItem[] = [
-        {
-            key: "/",
-            label: "Home",
-        },
-        {
-            key: "/favourites",
-            label: "Favorite",
-        },
-    ];
 
     return (
         <Menu

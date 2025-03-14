@@ -1,22 +1,14 @@
-import {theme} from "antd";
-import {AuthHome} from "~/screens/AuthHome";
-import {UnAuthHome} from "~/screens/UnAuthHome";
 import React from "react";
+import {Favourites} from "~/screens/Favourites";
+import {useAuth} from "~/context/AuthContext";
+import {  Navigate } from "react-router";
 
-export default function Favourites() {
-    const {
-        token: {colorBgContainer, borderRadiusLG},
-    } = theme.useToken();
+export default function FavouritesRoute() {
+    const { isAuthenticated } = useAuth();
 
-    return (<div
-        style={{
-            background: colorBgContainer,
-            minHeight: 280,
-            padding: 24,
-            borderRadius: borderRadiusLG,
-            flex: 1
-        }}
-    >
-        <h1>Favourite</h1>
-    </div>);
+    return (
+        <>
+            {(isAuthenticated) ? <Favourites/> : <Navigate to="/login"/>}
+        </>
+    )
 }

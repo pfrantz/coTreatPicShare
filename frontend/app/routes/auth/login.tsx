@@ -30,7 +30,7 @@ export default function Login() {
                 display: 'flex',
                 justifyContent: 'center',
                 alignItems: 'center',
-                height: '100vh'
+                height: 'calc(100vh - 164px)'
             }}
         >
             <div style={{ width: 250, textAlign: 'center' }}>
