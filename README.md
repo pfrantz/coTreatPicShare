@@ -86,4 +86,7 @@ An example header would look like this:
 Authorization: Bearer <token>
 ```
 
+##  Testing
 I have also included a hopscotch collection (this is a tool like postman) so you can test the api. The collection is in the root of the project.
+
+There is also a file called extradata.sql which has a bunch of images that you can run over and over to increase the number of pictures.

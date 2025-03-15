@@ -1,0 +1,152 @@
+[
+  {
+    "v": 6,
+    "name": "coTreat",
+    "folders": [],
+    "requests": [
+      {
+        "v": "11",
+        "name": "Login",
+        "method": "POST",
+        "endpoint": "http://localhost:3001/api/v1/auth/login",
+        "params": [],
+        "headers": [
+          {
+            "key": "Authorization",
+            "value": "Bearer 1",
+            "active": true,
+            "description": ""
+          }
+        ],
+        "preRequestScript": "",
+        "testScript": "\npw.env.set(\"auth_token\", pw.response.body.token);\n",
+        "auth": {
+          "authType": "none",
+          "authActive": false
+        },
+        "body": {
+          "contentType": "application/json",
+          "body": "{\n\"username\":\"phillip\"\n}"
+        },
+        "requestVariables": [],
+        "responses": {}
+      },
+      {
+        "v": "11",
+        "name": "profile",
+        "method": "GET",
+        "endpoint": "http://localhost:3001/api/v1/auth/profile",
+        "params": [],
+        "headers": [
+          {
+            "key": "Authorization",
+            "value": "Bearer <<auth_token>>",
+            "active": true,
+            "description": ""
+          }
+        ],
+        "preRequestScript": "",
+        "testScript": "",
+        "auth": {
+          "authType": "none",
+          "authActive": false
+        },
+        "body": {
+          "contentType": "application/json",
+          "body": ""
+        },
+        "requestVariables": [],
+        "responses": {}
+      },
+      {
+        "v": "11",
+        "name": "list media",
+        "method": "GET",
+        "endpoint": "http://localhost:3001/api/v1/media",
+        "params": [],
+        "headers": [],
+        "preRequestScript": "",
+        "testScript": "",
+        "auth": {
+          "authType": "bearer",
+          "token": "<<auth_token>>",
+          "authActive": true
+        },
+        "body": {
+          "contentType": null,
+          "body": null
+        },
+        "requestVariables": [],
+        "responses": {}
+      },
+      {
+        "v": "11",
+        "name": "create media",
+        "method": "POST",
+        "endpoint": "http://localhost:3001/api/v1/media",
+        "params": [],
+        "headers": [],
+        "preRequestScript": "",
+        "testScript": "",
+        "auth": {
+          "authType": "inherit",
+          "authActive": true
+        },
+        "body": {
+          "contentType": null,
+          "body": null
+        },
+        "requestVariables": [],
+        "responses": {}
+      },
+      {
+        "v": "11",
+        "name": "Update media",
+        "method": "PATCH",
+        "endpoint": "http://localhost:3001/api/v1/media/123",
+        "params": [],
+        "headers": [],
+        "preRequestScript": "",
+        "testScript": "",
+        "auth": {
+          "authType": "bearer",
+          "token": "<<auth_token>>",
+          "authActive": true
+        },
+        "body": {
+          "contentType": "application/json",
+          "body": "{\n\t\"zop\":123,\n  \"isFavourite\": true\n}"
+        },
+        "requestVariables": [],
+        "responses": {}
+      },
+      {
+        "v": "11",
+        "name": "delete media",
+        "method": "DELETE",
+        "endpoint": "http://localhost:3001/api/v1/media/123",
+        "params": [],
+        "headers": [],
+        "preRequestScript": "",
+        "testScript": "",
+        "auth": {
+          "authType": "bearer",
+          "token": "<<auth_token>>",
+          "authActive": true
+        },
+        "body": {
+          "contentType": null,
+          "body": null
+        },
+        "requestVariables": [],
+        "responses": {}
+      }
+    ],
+    "auth": {
+      "authType": "none",
+      "authActive": true
+    },
+    "headers": [],
+    "_ref_id": "coll_m82bfuer_1b54f812-6b24-410a-b9a5-d99cca10f841"
+  }
+]
