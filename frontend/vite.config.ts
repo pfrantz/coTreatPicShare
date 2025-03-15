@@ -11,5 +11,6 @@ export default defineConfig({
     watch: {
       usePolling: true,
     },
+    allowedHosts: true, // for dev let anything through as we will be running on docler
   },
 });

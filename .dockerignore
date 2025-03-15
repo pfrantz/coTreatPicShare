@@ -3,7 +3,7 @@
 #
 # For more help, visit the .dockerignore file reference guide at
 # https://docs.docker.com/go/build-context-dockerignore/
-**/.react-router
+
 **/.classpath
 **/.dockerignore
 **/.env
@@ -20,7 +20,7 @@
 **/*.dbmdl
 **/*.jfm
 **/charts
-**/docker-compose*
+postgres-docker-compose.yml
 **/compose.y*ml
 frontend/dev-Dockerfile
 **/node_modules
@@ -30,12 +30,5 @@ frontend/dev-Dockerfile
 **/values.dev.yaml
 **/build
 **/dist
-**/.idea
 LICENSE
 README.md
-.env
-.dockerignore
-.gitignore
-node_modules
-build
-dist

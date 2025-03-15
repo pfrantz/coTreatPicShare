@@ -1,0 +1,73 @@
+version: "3.9"
+services:
+  postgres:
+    image: postgres
+    restart: always
+    environment:
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: root_password
+      POSTGRES_DB: picshare_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - pg_data:/var/lib/postgresql/data/
+      - ./dev_docker_postgres_init.sql:/docker-entrypoint-initdb.d/dev_docker_postgres_init.sql
+    networks:
+      - network
+
+  nxginx:
+    depends_on:
+      - api
+      - client
+    restart: always
+    build:
+      dockerfile: Dockerfile
+      context: "./nginx"
+    ports:
+      - "3050:80"
+    networks:
+      - network
+
+  api:
+   build:
+     context: ./backend
+     dockerfile: dev-Dockerfile
+   restart: always
+   depends_on:
+     - postgres
+   ports:
+     - 3001:3001
+   volumes:
+     - ./api:/app
+     - /app/node_modules
+   environment:
+     - JWT_SECRET=aa1b55d8290a8c394b419f5efda9bfab12da838e7a23e5ab08d1aa006ece10839b9bf3260c6d453eb9a19e3dfcb00bb733b0b8bdfcfe1df3549f1a0a566a40be
+     - PORT=3001
+     - DATABASE_HOST=postgres
+     - DATABASE_PORT=5432
+     - DATABASE_USER=root
+     - DATABASE_PASSWORD=root_password
+     - DATABASE_NAME=picshare_db
+   networks:
+     - network
+
+  client:
+   build:
+     context: ./frontend
+     dockerfile: dev-Dockerfile
+   restart: always
+   ports:
+     - 3000:3000
+   volumes:
+     - ./client:/app
+     - /app/node_modules
+   environment:
+     - VITE_APP_PIC_SHARE_ENDPOINT=http://localhost:3001
+   networks:
+     - network
+
+networks:
+  network:
+
+volumes:
+  pg_data:
